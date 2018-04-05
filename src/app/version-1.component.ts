@@ -31,7 +31,7 @@ import { TableService } from './table.service';
   styles: []
 })
 export class Version1Component implements OnInit {
-  public table: string[][][] = [];
+  public table: ITable = [];
   constructor(private tableService: TableService) { }
   ngOnInit() { this.tableService.subscribe(table => this.table = table); }
 

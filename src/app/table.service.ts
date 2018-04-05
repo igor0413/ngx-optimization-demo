@@ -11,7 +11,7 @@ export class TableService {
 
   constructor() {}
 
-  public generateTable(rows: number, cols: number): string[][][] {
+  public generateTable(rows: number, cols: number): ITable {
     const table = [];
     for (let row = 0; row < rows; row++) {
       table[row] = [];
