@@ -7,6 +7,7 @@ import { DndModule } from 'ng2-dnd';
 import { AppComponent } from './app.component';
 import { Version1Component } from './version-1.component';
 import { Version2Component } from './version-2.component';
+import { Version3Component } from './version-3.component';
 import { TableService } from './table.service';
 
 
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: '', redirectTo: 'v1', pathMatch: 'full' },
   { path: 'v1', component: Version1Component },
   { path: 'v2', component: Version2Component },
+  { path: 'v3', component: Version3Component },
 ]
 
 
@@ -22,6 +24,7 @@ const routes: Routes = [
     AppComponent,
     Version1Component,
     Version2Component,
+    Version3Component,
   ],
   imports: [
     BrowserModule,
