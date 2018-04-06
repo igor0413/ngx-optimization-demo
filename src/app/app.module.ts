@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { Version1Component } from './version-1.component';
 import { Version2Component } from './version-2.component';
 import { Version3Component } from './version-3.component';
+import { Version4Component, Version4CellComponent } from './version-4.component';
 import { TableService } from './table.service';
 
 
@@ -16,6 +17,7 @@ const routes: Routes = [
   { path: 'v1', component: Version1Component },
   { path: 'v2', component: Version2Component },
   { path: 'v3', component: Version3Component },
+  { path: 'v4', component: Version4Component },
 ]
 
 
@@ -25,6 +27,8 @@ const routes: Routes = [
     Version1Component,
     Version2Component,
     Version3Component,
+    Version4Component,
+    Version4CellComponent,
   ],
   imports: [
     BrowserModule,
