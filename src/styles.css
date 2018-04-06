@@ -30,7 +30,8 @@ table .entered {
   border: 3px dashed lightgreen;
 }
 
-app-version-4-cell {
+app-version-4-cell,
+app-version-5-cell {
   display: block;
   width: 100%;
   height: 100%;

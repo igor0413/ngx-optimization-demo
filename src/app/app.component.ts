@@ -9,6 +9,7 @@ import { TableService } from './table.service';
       <li><a [routerLink]="['/v2']">Version 2</a></li>
       <li><a [routerLink]="['/v3']">Version 3</a></li>
       <li><a [routerLink]="['/v4']">Version 4</a></li>
+      <li><a [routerLink]="['/v5']">Version 5</a></li>
     </ul>
     <div>
       <p>
