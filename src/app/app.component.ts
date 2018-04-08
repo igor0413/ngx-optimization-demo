@@ -1,38 +1,44 @@
 import { Component, OnInit } from '@angular/core';
+import { Routes } from '@angular/router';
+import { ROUTES } from './routes';
 import { TableService } from './table.service';
 
 @Component({
   selector: 'app-root',
   template: `
-    <ul class="navigation">
-      <li><a [routerLink]="['/v1']">Version 1</a></li>
-      <li><a [routerLink]="['/v2']">Version 2</a></li>
-      <li><a [routerLink]="['/v3']">Version 3</a></li>
-      <li><a [routerLink]="['/v4']">Version 4</a></li>
-      <li><a [routerLink]="['/v5']">Version 5</a></li>
-    </ul>
-    <div>
-      <p>
-        <label>
-          rows
-          <input type="number" step="100" [(ngModel)]="rows" (input)="table.rows.next(rows)"/>
-        </label>
-      </p>
-      <p>
-        <label>
-          cols
-          <input type="number" step="1" [(ngModel)]="cols" (input)="table.cols.next(cols)"/>
-        </label>
-      </p>
+    <nav class="menu">
+      <h3>Меню</h3>
+      <ul class="navigation">
+        <li *ngFor="let router of routes">
+          <a [routerLink]="router.path" routerLinkActive="active">{{router.title}}</a>
+        </li>
+      </ul>
+    </nav>
+    <div class="rows-cols-form">
+      <h3>Параметры таблицы</h3>
+      <div>
+        <label>Количество строк</label>
+        <input type="number" step="100" [(ngModel)]="rows" (input)="table.rows.next(rows)"/>
+      </div>
+      <div>
+        <label>Количество столбцов</label>
+        <input type="number" step="1" [(ngModel)]="cols" (input)="table.cols.next(cols)"/>
+      </div>
     </div>
     <router-outlet></router-outlet>
-  `
+  `,
 })
 export class AppComponent implements OnInit {
-  rows: number = 100;
-  cols: number = 10;
+  public routes = ROUTES
+    .filter(x => x.data && x.data.title)
+    .map(x => ({ path: x.path, title: x.data.title }));
 
-  constructor(public table: TableService) {}
+  public rows: number = 100;
+  public cols: number = 10;
+
+  constructor(
+    public table: TableService
+  ) {}
 
   ngOnInit() {
     this.table.rows.next(this.rows);

@@ -1,14 +1,8 @@
-import { Component, OnInit, HostListener, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { TableService } from './table.service';
-
-const dndService = {
-  cell: null,
-  item: null,
-  isDropped: false,
-  set(cell, item) { Object.assign(this, { cell, item, isDropped: false }); },
-  reset() { this.set(null, null); },
-  drop() { this.isDropped = true; }
-};
+import { Component, HostListener, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { VersionBase } from './version-base';
+import { Cell } from './table.service';
+import { DndStorageService } from './dnd-storage.service';
+import { BeforeRenderService } from './before-render.service';
 
 @Component({
   selector: 'app-version-5-cell',
@@ -17,7 +11,7 @@ const dndService = {
       class="item"
       *ngFor="let item of cell"
       draggable="true"
-      (dragstart)="dragStart($event)"
+      (dragstart)="dragStart($event, item)"
       (dragend)="dragEnd($event)"
     >{{item}}</span>
     <span class="entered" *ngIf="cell.entered">{{cell.entered}}</span>
@@ -25,81 +19,87 @@ const dndService = {
 })
 export class Version5CellComponent {
 
-  @Input() public cell: ICell;
+  @Input() public cell: Cell;
 
-  private dndService = dndService;
+  private enteredElements: any = [];
 
   constructor(
     private element: ElementRef,
+    private dndStorage: DndStorageService,
     private changeDetector: ChangeDetectorRef,
-  ) {
+    private beforeRender: BeforeRenderService,
+  ) {}
+
+  // Начало перетаскивания
+  public dragStart(event: DragEvent, item: string) {
+    this.dndStorage.set(this.cell, item);
+    event.dataTransfer.effectAllowed = 'all';
+    event.dataTransfer.setData('Text', item);
   }
 
+  // Курсор с данными был наведен на элемент таблицы
   @HostListener('dragenter.out-zone', ['$event'])
   private dragEnter(event: DragEvent) {
-    if (this.cell !== this.dndService.cell) {
-      this.cell.entered = this.dndService.item;
-      this.changeDetector.detectChanges();
+    this.enteredElements.push(event.target);
+    if (this.cell !== this.dndStorage.cell) {
+      this.cell.entered = this.dndStorage.item;
+      this.beforeRender.addTask(() => this.changeDetector.detectChanges());
     }
   }
 
+  // Курсор с данными покинул элемент таблицы
   @HostListener('dragleave.out-zone', ['$event'])
   private dragLeave(event: DragEvent) {
-    const element = event.fromElement;
-    const closest = element && element.closest('app-version-5-cell');
-    if (closest !== this.element.nativeElement) {
+    this.enteredElements = this.enteredElements.filter(x => x != event.target);
+    if (!this.enteredElements.length) {
       delete this.cell.entered;
-      this.changeDetector.detectChanges();
+      this.beforeRender.addTask(() => this.changeDetector.detectChanges());
     }
   }
 
+  // Курсор с данными находится над элементом таблицы
   @HostListener('dragover.out-zone', ['$event'])
   private dragOver(event: DragEvent) {
     event.preventDefault();
     event.dataTransfer.dropEffect = this.cell.entered ? 'move' : 'none';
+    return false;
   }
 
+  // На элемент таблицы положили данные
   @HostListener('drop', ['$event'])
   private drop(event: DragEvent) {
     event.stopPropagation();
-    this.cell.push(this.dndService.item);
-    this.dndService.drop();
+    this.cell.push(this.dndStorage.item);
+    this.dndStorage.dropped();
     delete this.cell.entered;
+    return false;
   }
 
-  public dragStart(event: DragEvent) {
-    event.dataTransfer.effectAllowed = 'all';
-    const item = event.srcElement.textContent;
-    this.dndService.set(this.cell, item);
-  }
-
+  // Перетаскивание завершено
   public dragEnd(event: DragEvent) {
-    if (this.dndService.isDropped) {
-      const index = this.cell.indexOf(this.dndService.item);
+    if (this.dndStorage.isDropped) {
+      const index = this.cell.indexOf(this.dndStorage.item);
       this.cell.splice(index, 1);
     }
-    this.dndService.reset();
+    this.dndStorage.reset();
   }
 }
-
 
 @Component({
   selector: 'app-version-5',
   template: `
-    <h1>Variant 5</h1>
+    <h1>{{title}}</h1>
     <table>
       <tbody>
         <tr *ngFor="let row of table">
           <td *ngFor="let cell of row">
-            <app-version-5-cell [cell]="cell"></app-version-5-cell>
+            <app-version-5-cell class="cell-content" [cell]="cell"></app-version-5-cell>
           </td>
         </tr>
       </tbody>
     </table>
   `,
 })
-export class Version5Component implements OnInit {
-  public table: ITable = [];
-  constructor(private tableService: TableService) { }
-  ngOnInit() { this.tableService.subscribe(table => this.table = table); }
+export class Version5Component extends VersionBase {
+  public static readonly title = 'Атомарное отслеживание изменений';
 }

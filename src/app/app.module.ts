@@ -4,25 +4,20 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { DndModule } from 'ng2-dnd';
 
+import { ROUTES } from './routes';
+
 import { AppComponent } from './app.component';
 import { Version1Component } from './version-1.component';
 import { Version2Component } from './version-2.component';
 import { Version3Component } from './version-3.component';
 import { Version4Component, Version4CellComponent } from './version-4.component';
 import { Version5Component, Version5CellComponent } from './version-5.component';
+
 import { TableService } from './table.service';
+import { DndStorageService } from './dnd-storage.service';
+import { BeforeRenderService } from './before-render.service';
+
 import { OutZoneEventManager } from './out-zone-event-manager';
-
-
-const routes: Routes = [
-  { path: '', redirectTo: 'v1', pathMatch: 'full' },
-  { path: 'v1', component: Version1Component },
-  { path: 'v2', component: Version2Component },
-  { path: 'v3', component: Version3Component },
-  { path: 'v4', component: Version4Component },
-  { path: 'v5', component: Version5Component },
-]
-
 
 @NgModule({
   declarations: [
@@ -38,11 +33,13 @@ const routes: Routes = [
   imports: [
     BrowserModule,
     FormsModule,
-    RouterModule.forRoot(routes, {useHash: true}),
+    RouterModule.forRoot(ROUTES, {useHash: true}),
     DndModule.forRoot(),
   ],
   providers: [
     TableService,
+    DndStorageService,
+    BeforeRenderService,
     { provide: EventManager, useClass: OutZoneEventManager },
   ],
   bootstrap: [AppComponent]

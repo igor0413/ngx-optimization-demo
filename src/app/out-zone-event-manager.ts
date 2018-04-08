@@ -12,12 +12,15 @@ export class OutZoneEventManager extends EventManager {
   }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+    // Поиск флага в названии события
     if(eventName.endsWith('out-zone')) {
       eventName = eventName.split('.')[0];
+      // Обработчик события будет выполняться вне контекста Angular
       return this.zone.runOutsideAngular(() => {
         return super.addEventListener(element, eventName, handler);
       });
     }
+    // Поведение по умолчанию
     return super.addEventListener(element, eventName, handler);
   }
 }

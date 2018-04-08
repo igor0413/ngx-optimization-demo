@@ -1,7 +1,16 @@
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-
-import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Injectable } from '@angular/core';
+
+export class Cell extends Array<string> {
+  public entered: string;
+}
+
+export class Row extends Array<Cell> {
+}
+
+export class Table extends Array<Row> {
+}
 
 @Injectable()
 export class TableService {
@@ -11,12 +20,13 @@ export class TableService {
 
   constructor() {}
 
-  public generateTable(rows: number, cols: number): ITable {
-    const table = [];
+  public generateTable(rows: number, cols: number): Table {
+    const table = new Table();
     for (let row = 0; row < rows; row++) {
-      table[row] = [];
+      table[row] = new Row();
       for (let col = 0; col < cols; col++) {
-        table[row][col] = [`cell-${row}x${col}`];
+        table[row][col] = new Cell();
+        table[row][col].push(`${row + 1} × ${col + 1}`);
       }
     }
     return table;
@@ -27,5 +37,4 @@ export class TableService {
       fn(this.generateTable(rows, cols));
     });
   }
-
 }

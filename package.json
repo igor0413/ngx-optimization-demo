@@ -5,7 +5,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod"
+    "build": "ng build --prod",
+    "docs:clear": "rm -f docs/*.txt docs/*.html docs/*.js docs/*.css",
+    "docs:copy": "cp dist/* docs/",
+    "docs": "npm run docs:clear && npm run build && npm run docs:copy"
   },
   "private": true,
   "dependencies": {
